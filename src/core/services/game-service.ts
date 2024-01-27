@@ -8,7 +8,7 @@ export class GameService {
   private currentPiece: Piece;
   private score: number = 0;
   private lastDropTime: number = 0;
-  private dropInterval: number = 100;
+  private dropInterval: number = 1000;
 
   private canvasWidth: number = DISPLAY.BLOCK_SIZE * DISPLAY.BOARD_WIDTH;
   private canvasHeight: number = DISPLAY.BLOCK_SIZE * DISPLAY.BOARD_HEIGHT;
@@ -52,15 +52,23 @@ export class GameService {
     context: CanvasRenderingContext2D,
     $score: HTMLSpanElement,
   ): void {
-    context.fillStyle = "#000";
+    context.fillStyle = "#20202380";
     context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    const cubeColor = "#008085"; // Color teal para los cubos
+    const borderColor = "#02020280"; // Color del borde
+    const borderWidth = 0.1;
 
     const board = this.boardService.getBoard();
     board.grid.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value !== 0) {
-          context.fillStyle = "white";
+          context.fillStyle = cubeColor;
           context.fillRect(x, y, 1, 1);
+
+          context.strokeStyle = borderColor;
+          context.lineWidth = borderWidth;
+          context.strokeRect(x, y, 1, 1);
         }
       });
     });
@@ -68,7 +76,7 @@ export class GameService {
     this.currentPiece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value !== 0) {
-          context.fillStyle = "purple";
+          context.fillStyle = cubeColor;
           context.fillRect(
             x + this.currentPiece.position.x,
             y + this.currentPiece.position.y,

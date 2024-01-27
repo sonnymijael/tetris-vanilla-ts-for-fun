@@ -1,11 +1,11 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "M PLUS Rounded 1c", sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: 300;
 
   color-scheme: dark light;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #ffffff40;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -23,7 +23,7 @@ body {
 
 section {
   position: absolute;
-  background: black;
+  background-color: #20202379;
   width: 100vw;
   height: 100vh;
   top: 0;
@@ -31,4 +31,9 @@ section {
   display: grid;
   font-size: 40px;
   place-content: center;
+  font-weight: 300;
+}
+
+span {
+  font-weight: 700;
 }
