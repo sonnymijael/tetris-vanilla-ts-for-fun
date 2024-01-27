@@ -1,3 +1,4 @@
+import { DISPLAY } from "../enums";
 import { Piece } from "../interface";
 
 export class PieceService {
@@ -59,13 +60,21 @@ export class PieceService {
 
   public createPiece(): Piece {
     const piece = this.pieces[Math.floor(Math.random() * this.pieces.length)];
-    return { ...piece, position: { x: 0, y: 0 } };
+    return {
+      ...piece,
+      position: { x: Math.floor(DISPLAY.BOARD_WIDTH / 2 - 2), y: 0 },
+    };
   }
 
   public rotate(piece: Piece): Piece {
-    let rotatedShape = piece.shape
-      .map((_, index) => piece.shape.map((column) => column[index]))
-      .reverse();
+    const rotatedShape: any = [];
+    for (let i = 0; i < piece.shape[0].length; i++) {
+      const row = [];
+      for (let j = piece.shape.length - 1; j >= 0; j--) {
+        row.push(piece.shape[j][i]);
+      }
+      rotatedShape.push(row);
+    }
 
     return { ...piece, shape: rotatedShape };
   }

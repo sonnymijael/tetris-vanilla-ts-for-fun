@@ -19,9 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
     gameService.handleKeyPress(event);
   });
 
-  let lastTime = 1;
+  let lastTime = 0;
 
-  function gameLoop(time = 1) {
+  function gameLoop(time = 0) {
     const deltaTime = time - lastTime;
     lastTime = time;
 

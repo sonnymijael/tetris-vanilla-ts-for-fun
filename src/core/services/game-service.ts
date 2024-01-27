@@ -8,7 +8,7 @@ export class GameService {
   private currentPiece: Piece;
   private score: number = 0;
   private lastDropTime: number = 0;
-  private dropInterval: number = 1000;
+  private dropInterval: number = 10000;
 
   private canvasWidth: number = DISPLAY.BLOCK_SIZE * DISPLAY.BOARD_WIDTH;
   private canvasHeight: number = DISPLAY.BLOCK_SIZE * DISPLAY.BOARD_HEIGHT;
@@ -17,6 +17,8 @@ export class GameService {
     this.pieceService = pieceService;
     this.boardService = boardService;
     this.currentPiece = this.pieceService.createPiece();
+
+    console.table(this.currentPiece);
   }
 
   public configureCanvas(canvas: HTMLCanvasElement): void {
@@ -30,6 +32,12 @@ export class GameService {
   public update(deltaTime: number, context: CanvasRenderingContext2D): void {
     this.lastDropTime += deltaTime;
     if (this.lastDropTime > this.dropInterval) {
+      this.currentPiece.position.y++;
+      if (this.boardService.checkCollision(this.currentPiece)) {
+        this.currentPiece.position.y--;
+        this.boardService.solidifyPiece(this.currentPiece);
+        this.currentPiece = this.pieceService.createPiece();
+      }
       this.lastDropTime = 0;
     }
 
@@ -37,11 +45,10 @@ export class GameService {
   }
 
   public draw(context: CanvasRenderingContext2D): void {
-    const board = this.boardService.getBoard();
-
     context.fillStyle = "#000";
     context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
+    const board = this.boardService.getBoard();
     board.grid.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value !== 0) {
@@ -53,7 +60,7 @@ export class GameService {
 
     this.currentPiece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
-        if (value === 0) {
+        if (value !== 0) {
           context.fillStyle = "purple";
           context.fillRect(
             x + this.currentPiece.position.x,
@@ -67,19 +74,29 @@ export class GameService {
   }
 
   public handleKeyPress(event: KeyboardEvent): void {
+    const originalPosition = { ...this.currentPiece.position };
+    let moved = false;
     switch (event.key) {
       case KEY.LEFT:
-        console.log("left");
+        this.currentPiece.position.x--;
+        moved = true;
         break;
       case KEY.RIGHT:
-        console.log("rigth");
+        this.currentPiece.position.x++;
+        moved = true;
         break;
       case KEY.DOWN:
-        console.log("down");
+        this.currentPiece.position.y++;
+        moved = true;
         break;
       case KEY.UP:
-        console.log("up");
+        this.currentPiece = this.pieceService.rotate(this.currentPiece);
+        moved = true;
         break;
+    }
+
+    if (moved && this.boardService.checkCollision(this.currentPiece)) {
+      this.currentPiece.position = originalPosition;
     }
   }
 }

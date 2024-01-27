@@ -29,16 +29,27 @@ export class BoardService {
     });
   }
 
-  public checkCollision(piece: Piece): boolean {
-    return piece.shape.some((row, y) => {
-      row.some(
-        (value, x) =>
+  public checkCollision(piece: Piece) {
+    return piece.shape.find((row, y) => {
+      return row.find((value, x) => {
+        return (
           value !== 0 &&
-          (this.board.grid[y + piece.position.y] &&
-            this.board.grid[y + piece.position.y][x + piece.position.x]) !== 0,
-      );
+          this.board.grid[y + piece.position.y]?.[x + piece.position.x] !== 0
+        );
+      });
     });
   }
+
+  //public checkCollision(piece: Piece): boolean {
+  //  return piece.shape.some((row, y) => {
+  //    row.some(
+  //      (value, x) =>
+  //        value !== 0 &&
+  //        (this.board.grid[y + piece.position.y] &&
+  //          this.board.grid[y + piece.position.y][x + piece.position.x]) !== 0,
+  //    );
+  //  });
+  //}
 
   public clearRows(): number {
     let clearedRows = 0;
