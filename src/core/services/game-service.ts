@@ -8,7 +8,7 @@ export class GameService {
   private currentPiece: Piece;
   private score: number = 0;
   private lastDropTime: number = 0;
-  private dropInterval: number = 10000;
+  private dropInterval: number = 100;
 
   private canvasWidth: number = DISPLAY.BLOCK_SIZE * DISPLAY.BOARD_WIDTH;
   private canvasHeight: number = DISPLAY.BLOCK_SIZE * DISPLAY.BOARD_HEIGHT;
@@ -17,8 +17,6 @@ export class GameService {
     this.pieceService = pieceService;
     this.boardService = boardService;
     this.currentPiece = this.pieceService.createPiece();
-
-    console.table(this.currentPiece);
   }
 
   public configureCanvas(canvas: HTMLCanvasElement): void {
@@ -29,7 +27,11 @@ export class GameService {
     if (context) context.scale(DISPLAY.BLOCK_SIZE, DISPLAY.BLOCK_SIZE);
   }
 
-  public update(deltaTime: number, context: CanvasRenderingContext2D): void {
+  public update(
+    deltaTime: number,
+    context: CanvasRenderingContext2D,
+    $score: HTMLSpanElement,
+  ): void {
     this.lastDropTime += deltaTime;
     if (this.lastDropTime > this.dropInterval) {
       this.currentPiece.position.y++;
@@ -37,14 +39,19 @@ export class GameService {
         this.currentPiece.position.y--;
         this.boardService.solidifyPiece(this.currentPiece);
         this.currentPiece = this.pieceService.createPiece();
+        this.score = this.score += this.boardService.removeRows();
+        if (this.boardService.gameOver()) this.score = 0;
       }
       this.lastDropTime = 0;
     }
 
-    this.draw(context);
+    this.draw(context, $score);
   }
 
-  public draw(context: CanvasRenderingContext2D): void {
+  public draw(
+    context: CanvasRenderingContext2D,
+    $score: HTMLSpanElement,
+  ): void {
     context.fillStyle = "#000";
     context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
@@ -71,6 +78,7 @@ export class GameService {
         }
       });
     });
+    $score.innerText = this.score.toString();
   }
 
   public handleKeyPress(event: KeyboardEvent): void {
@@ -90,7 +98,11 @@ export class GameService {
         moved = true;
         break;
       case KEY.UP:
+        let previousPiece = this.currentPiece;
         this.currentPiece = this.pieceService.rotate(this.currentPiece);
+        if (this.boardService.checkCollision(this.currentPiece)) {
+          this.currentPiece = previousPiece;
+        }
         moved = true;
         break;
     }

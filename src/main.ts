@@ -5,6 +5,7 @@ import { DISPLAY } from "./core/enums";
 document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.querySelector("canvas") as HTMLCanvasElement;
   const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+  const $score = document.querySelector("span") as HTMLSpanElement;
 
   const boardService = new BoardService(
     DISPLAY.BOARD_WIDTH,
@@ -25,8 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const deltaTime = time - lastTime;
     lastTime = time;
 
-    gameService.update(deltaTime, context);
-    gameService.draw(context);
+    gameService.update(deltaTime, context, $score);
+    gameService.draw(context, $score);
 
     requestAnimationFrame(gameLoop);
   }
